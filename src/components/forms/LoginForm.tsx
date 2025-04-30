@@ -33,14 +33,12 @@ export const LoginForm = () => {
       setIsLoading(true);
       const response = await login(formData.username, formData.password);
       if (response.status === 200) {
-        console.log(response.data, "here is the response");
         setUserCookie(response.data.token);
         setSuccess(true);
         navigate("/dashboard");
       }
     } catch (error) {
       const apiError = error as ApiError;
-      console.log(apiError, "here is the error");
       setError(apiError.response.data.message);
     } finally {
       setIsLoading(false);
