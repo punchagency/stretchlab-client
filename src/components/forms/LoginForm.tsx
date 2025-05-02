@@ -81,7 +81,7 @@ export const LoginForm = () => {
       )}
       <Button
         disabled={isLoading}
-        className="bg-primary-base phone:mt-2 tablet:mt-6 laptop:mt-6 text-white flex items-center justify-center gap-2"
+        className="bg-primary-base phone:mt-2 tablet:mt-6 laptop:mt-6 py-4 text-white flex items-center justify-center gap-2"
       >
         {isLoading ? (
           <>

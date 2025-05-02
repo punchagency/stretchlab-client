@@ -1,8 +1,9 @@
 import { getBookings } from "../service/dashboard";
 import { useEffect, useRef, useState } from "react";
 import { getUserCookie } from "../utils/user";
-import { Button } from "../components/shared";
-
+import { Button, Header } from "../components/shared";
+import { format } from "date-fns";
+import { BookingList } from "../components/dashboard";
 interface ApiError {
   response?: {
     status: number;
@@ -38,15 +39,42 @@ export const Dashboard = () => {
     setError(false);
     fetchBookings();
   };
+  if (error) {
+    return (
+      <div className="h-[70vh] grid place-items-center">
+        <div>
+          <p className="text-grey-2 font-semibold text-2xl text-center">
+            An Error Occured
+          </p>
+          <p className="text-grey-5 text-base">
+            An error occured when fetching bookings. Please try again
+          </p>
+          <div className="mt-4 flex justify-center">
+            <Button
+              onClick={handleRefresh}
+              className="bg-primary-base mx-auto text-white"
+            >
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
-      {error && (
-        <Button onClick={handleRefresh} className="bg-primary-base text-white">
-          Refresh
-        </Button>
-      )}
-      Dashboard
+      <Header />
+
+      <div className="py-4">
+        <div className="laptop:flex tablet:flex phone:hidden items-center gap-6">
+          <h4 className="text-lg font-semibold">Today’s Appointment</h4>
+          <div className="border border-neutral-secondary rounded px-2 py-1">
+            {format(new Date(), "dd-MM-yyyy")}
+          </div>
+        </div>
+        <BookingList bookings={[]} />
+      </div>
     </div>
   );
 };
