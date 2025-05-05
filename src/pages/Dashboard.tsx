@@ -1,7 +1,7 @@
 import { getBookings } from "../service/dashboard";
 import { useEffect, useRef, useState } from "react";
 import { getUserCookie } from "../utils/user";
-import { Button, Header } from "../components/shared";
+import { Button, FullLoader, Header } from "../components/shared";
 import { format } from "date-fns";
 import { BookingList } from "../components/dashboard";
 interface ApiError {
@@ -13,10 +13,12 @@ interface ApiError {
 export const Dashboard = () => {
   const hasFetched = useRef(false);
   const [error, setError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchBookings = async () => {
     const getCookie = getUserCookie();
     try {
+      setIsLoading(true);
       const response = await getBookings(getCookie as string);
       console.log(response);
     } catch (error) {
@@ -25,6 +27,8 @@ export const Dashboard = () => {
         setError(true);
       }
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -39,6 +43,9 @@ export const Dashboard = () => {
     setError(false);
     fetchBookings();
   };
+  if (isLoading) {
+    return <FullLoader />;
+  }
   if (error) {
     return (
       <div className="h-[70vh] grid place-items-center">
@@ -52,7 +59,7 @@ export const Dashboard = () => {
           <div className="mt-4 flex justify-center">
             <Button
               onClick={handleRefresh}
-              className="bg-primary-base mx-auto text-white"
+              className="bg-primary-base mx-auto py-2 text-white"
             >
               Try Again
             </Button>

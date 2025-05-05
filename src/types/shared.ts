@@ -4,4 +4,8 @@ export type SvgIconName =
   | "eye"
   | "phone"
   | "angle-left"
-  | "send";
+  | "send"
+  | "microphone"
+  | "stop"
+  | "warning"
+  | "check-circle";
