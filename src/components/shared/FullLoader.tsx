@@ -1,0 +1,11 @@
+export const FullLoader = () => {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-300 bg-opacity-50 z-50">
+      <div className="flex space-x-2 p-4">
+        <div className="w-4 h-4 bg-primary-base rounded-full animate-bounce"></div>
+        <div className="w-4 h-4 bg-primary-base rounded-full animate-bounce [animation-delay:0.2s]"></div>
+        <div className="w-4 h-4 bg-primary-base rounded-full animate-bounce [animation-delay:0.4s]"></div>
+      </div>
+    </div>
+  );
+};

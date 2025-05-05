@@ -1,6 +1,6 @@
 import { Button, SvgIcon } from "../shared";
 
-export const Header = () => {
+export const Header = ({ started }: { started: boolean }) => {
   return (
     <div className="flex items-center gap-8 pt-2 py-4 border-b border-neutral-tertiary">
       <button className="flex items-center gap-2 border-r border-grey-1 pr-2">
@@ -13,8 +13,12 @@ export const Header = () => {
       <h3 className="text-dark-1 laptop:block tablet:block phone:hidden font-semibold text-xl">
         Janica Micheal Session
       </h3>
-      <div className="bg-grey-2 laptop:block tablet:block phone:hidden text-center text-[10px] font-medium text-white rounded py-1 px-3">
-        Not Started
+      <div
+        className={`${
+          started ? "bg-[#F3A218] text-dark-1" : "bg-grey-2 text-white"
+        } laptop:block tablet:block phone:hidden text-center text-[10px] font-medium  rounded py-1 px-3`}
+      >
+        {started ? "In Progress" : "Not Started"}
       </div>
       <Button className="bg-primary-base laptop:hidden tablet:hidden phone:block text-sm py-2 ml-auto text-white">
         Start Session
