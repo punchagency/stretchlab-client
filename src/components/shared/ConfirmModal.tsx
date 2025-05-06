@@ -1,3 +1,4 @@
+import { Spinner } from "./Spinner";
 import { SvgIcon } from "./SvgIcon";
 
 export const ConfirmModal = ({
@@ -6,12 +7,14 @@ export const ConfirmModal = ({
   onConfirm,
   title,
   message,
+  loading,
 }: {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   title: string;
   message: string;
+  loading: boolean;
 }) => {
   if (!isOpen) return null;
 
@@ -40,7 +43,14 @@ export const ConfirmModal = ({
             onClick={onConfirm}
             className="px-4 py-2 w-full bg-primary-base text-white rounded-md hover:bg-opacity-80"
           >
-            Submit
+            {loading ? (
+              <div className="flex items-center gap-2">
+                <Spinner />
+                <span>Submitting...</span>
+              </div>
+            ) : (
+              "Submit"
+            )}
           </button>
         </div>
       </div>

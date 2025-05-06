@@ -3,49 +3,24 @@ import { Booking, BookingListProps } from "../../types/dashboard";
 import { LongCard } from "./LongCard";
 import { Card } from "./Card";
 
-const bookings: Booking[] = [
-  {
-    id: "1",
-    startTime: "07:30",
-    endTime: "07:55",
-    title: "Morning Briefing",
-  },
-  {
-    id: "2",
-    startTime: "10:00",
-    endTime: "11:05",
-    title: "Project Review",
-  },
-  {
-    id: "3",
-    startTime: "12:45",
-    endTime: "13:30",
-    title: "Lunch Meeting",
-  },
-  {
-    id: "4",
-    startTime: "15:20",
-    endTime: "16:00",
-    title: "Client Consultation",
-  },
-  {
-    id: "5",
-    startTime: "18:00",
-    endTime: "19:00",
-    title: "Team Wrap-Up",
-  },
-];
-
-export const BookingList: FC<BookingListProps> = () => {
+export const BookingList: FC<BookingListProps> = ({ bookings }) => {
   const hours = Array.from({ length: 13 }, (_, i) => 7 + i);
   const timeToMinutes = (time: string): number => {
-    const [hours, minutes] = time.split(":").map(Number);
+    const [timePart, period] = time.trim().split(" ");
+    let [hours, minutes] = timePart.split(":").map(Number);
+
+    if (period === "PM" && hours !== 12) {
+      hours += 12;
+    } else if (period === "AM" && hours === 12) {
+      hours = 0;
+    }
+
     return hours * 60 + minutes;
   };
 
   const getBookingStyle = (booking: Booking) => {
-    const startMinutes = timeToMinutes(booking.startTime);
-    const endMinutes = timeToMinutes(booking.endTime);
+    const startMinutes = timeToMinutes(booking.event_date.split("-")[0].trim());
+    const endMinutes = timeToMinutes(booking.event_date.split("-")[1].trim());
     const startOfDay = 7 * 60;
     const pixelsPerMinute = 112 / 60;
     const offset = 56;
@@ -88,7 +63,7 @@ export const BookingList: FC<BookingListProps> = () => {
 
           {bookings.map((booking) => (
             <LongCard
-              key={booking.id}
+              key={booking.booking_id}
               getBookingStyle={getBookingStyle}
               booking={booking}
             />
@@ -97,7 +72,7 @@ export const BookingList: FC<BookingListProps> = () => {
       </div>
       <div className="phone:flex laptop:hidden tablet:hidden flex-col gap-6">
         {bookings.map((item, index) => (
-          <Card key={index} />
+          <Card key={index} booking={item} />
         ))}
       </div>
     </>

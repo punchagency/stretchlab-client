@@ -1,41 +1,51 @@
-import { FullLoader, SvgIcon } from "../shared";
+import { SvgIcon } from "../shared";
 import emptyNote from "../../assets/images/emptynotes.png";
-import io from "socket.io-client";
+// import io from "socket.io-client";
 import { useRef, useState } from "react";
 import { useEffect } from "react";
-import { getNotes, getQuestions, postNote } from "../../service/session";
+import { getQuestions, postNote } from "../../service/session";
 import { v4 as uuidv4 } from "uuid";
+import {
+  Note,
+  SpeechRecognition,
+  SpeechRecognitionErrorEvent,
+  SpeechRecognitionEvent,
+} from "../../types";
+
+declare global {
+  interface Window {
+    SpeechRecognition: new () => SpeechRecognition;
+    webkitSpeechRecognition: new () => SpeechRecognition;
+  }
+}
+
 export const SessionNote = ({
+  setAiNotes,
   id,
   started,
+  notes,
+  setNotes,
 }: {
+  setAiNotes: (notes: Note[] | ((prevNotes: Note[]) => Note[])) => void;
   id: string;
   started: boolean;
+  notes: Note[];
+  setNotes: (notes: Note[] | ((prevNotes: Note[]) => Note[])) => void;
 }) => {
-  const socket = io("http://localhost:5000/transcribe", {
-    transports: ["websocket"],
-  });
+  // const socket = io("http://localhost:5000/transcribe", {
+  //   transports: ["websocket"],
+  // });
 
   const [transcript, setTranscript] = useState<string>("");
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [microphoneAccessState, setMicrophoneAccessState] =
     useState<boolean>(false);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
-    null
-  );
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [isSending, setIsSending] = useState<boolean>(false);
-  const [notes, setNotes] = useState<
-    {
-      id: string;
-      note: string | string[];
-      time: string;
-      voice: boolean;
-      error: boolean;
-      type: string;
-    }[]
-  >([]);
+  const [isSupported, setIsSupported] = useState(true);
+  const notesContainerRef = useRef<HTMLDivElement | null>(null);
+
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   const checkMicrophonePermission = async () => {
     try {
@@ -49,7 +59,52 @@ export const SessionNote = ({
     }
   };
 
-  const notesContainerRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setIsSupported(false);
+      return;
+    }
+
+    recognitionRef.current = new SpeechRecognition();
+    if (!recognitionRef.current) return;
+    recognitionRef.current.continuous = true;
+    recognitionRef.current.interimResults = true;
+    recognitionRef.current.lang = "en-US";
+
+    let finalTranscript = "";
+
+    recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
+      let interimTranscript = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        console.log(result, "resulted stuff");
+        if (result.isFinal) {
+          finalTranscript += result[0].transcript;
+        } else {
+          interimTranscript += result[0].transcript;
+        }
+      }
+
+      setTranscript(finalTranscript + interimTranscript);
+    };
+
+    recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
+      console.error("Speech recognition error:", event.error);
+      setIsRecording(false);
+    };
+
+    recognitionRef.current.onend = () => {
+      setIsRecording(false);
+    };
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (notesContainerRef.current) {
@@ -61,99 +116,35 @@ export const SessionNote = ({
     checkMicrophonePermission();
   }, []);
 
-  useEffect(() => {
-    const fetchNotes = async () => {
-      setIsLoading(true);
-      try {
-        const response = await getNotes(id as string);
-        if (response.status === 200) {
-          const reversedNotes = response.data.notes.reverse();
-          setNotes(
-            reversedNotes.map(
-              (note: {
-                createdTime: Date;
-                fields: {
-                  Note: string;
-                  Time: string;
-                  Voice: string;
-                  type: string;
-                };
-                id: string;
-              }) => ({
-                id: note.id,
-                note:
-                  note.fields.type === "user"
-                    ? note.fields.Note
-                    : JSON.parse(note.fields.Note),
-                time: new Date(note.createdTime).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }),
-                voice: note.fields.Voice === "False" ? false : true,
-                type: note.fields.type,
-                error: false,
-              })
-            )
-          );
-        }
-      } catch (err) {
-        console.error("Error fetching notes:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchNotes();
-  }, []);
+  // useEffect(() => {
+  //   socket.on("transcript", (data: { text: string; is_final: boolean }) => {
+  //     setTranscript(data.text);
+  //     if (data.is_final) {
+  //       console.log("Final transcript:", data.text);
+  //     }
+  //   });
 
-  useEffect(() => {
-    socket.on("transcript", (data: { text: string; is_final: boolean }) => {
-      setTranscript(data.text);
-      if (data.is_final) {
-        console.log("Final transcript:", data.text);
-      }
-    });
-
-    return () => {
-      socket.off("transcript");
-    };
-  }, []);
+  //   return () => {
+  //     socket.off("transcript");
+  //   };
+  // }, []);
 
   const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
-      setMediaRecorder(recorder);
-
-      recorder.ondataavailable = (event: BlobEvent) => {
-        if (event.data.size > 0) {
-          socket.emit("audio", event.data);
-        }
-      };
-
-      recorder.start(100);
+    if (recognitionRef.current && !isRecording) {
+      recognitionRef.current.start();
       setIsRecording(true);
-    } catch (err) {
-      console.error("Error accessing microphone:", err);
     }
   };
 
   const stopRecording = () => {
-    if (mediaRecorder) {
-      mediaRecorder.stop();
-      mediaRecorder.stream
-        .getTracks()
-        .forEach((track: MediaStreamTrack) => track.stop());
-      socket.emit("stop");
+    if (recognitionRef.current && isRecording) {
+      recognitionRef.current.stop();
       setIsRecording(false);
-      setMediaRecorder(null);
     }
   };
 
-  if (isLoading) {
-    return <FullLoader />;
-  }
   const handleRetry = async (id: string) => {
-    setIsLoading(true);
+    setIsSending(true);
     try {
       const data = notes.find((note) => note.id === id);
       const response = await postNote({
@@ -181,7 +172,7 @@ export const SessionNote = ({
     } catch (err) {
       console.error("Error sending message:", err);
     } finally {
-      setIsLoading(false);
+      setIsSending(false);
     }
   };
   const handleSendMessage = async () => {
@@ -264,7 +255,6 @@ export const SessionNote = ({
     }
   };
 
-  console.log(notes, "here notes");
   const handleAnalyze = async () => {
     setIsAnalyzing(true);
     try {
@@ -273,6 +263,20 @@ export const SessionNote = ({
 
       if (response.status === 200) {
         setNotes((prevNotes) => [
+          ...prevNotes,
+          {
+            id: uuidv4(),
+            note: response.data.questions.questions,
+            time: new Date().toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            type: "assistant",
+            voice: false,
+            error: false,
+          },
+        ]);
+        setAiNotes((prevNotes) => [
           ...prevNotes,
           {
             id: uuidv4(),
@@ -315,7 +319,7 @@ export const SessionNote = ({
       ) : (
         <div
           ref={notesContainerRef}
-          className="flex flex-col gap-6 py-4 overflow-y-auto max-h-[60vh] pb-24"
+          className="flex flex-col gap-6 py-4 overflow-y-auto laptop:max-h-[60vh] tablet:max-h-[65vh] phone:max-h-[60vh] pb-24"
         >
           {notes.map((note, index) => (
             <div
@@ -328,12 +332,14 @@ export const SessionNote = ({
                 className={`text-sm  rounded-lg max-w-full w-fit ${
                   note.type == "user"
                     ? "bg-primary-light text-[#475367]"
-                    : "bg-[#F3A21840] text-dark-1"
+                    : note.note.length > 0
+                    ? "bg-[#F3A21840] text-dark-1"
+                    : "bg-primary-base text-white"
                 } p-4`}
               >
                 {note.type === "user" ? (
                   note.note
-                ) : (
+                ) : note.note.length > 0 ? (
                   <ul className="list-disc list-inside gap-1 flex flex-col">
                     {(note.note as string[]).map(
                       (item: string, index: number) => (
@@ -341,6 +347,11 @@ export const SessionNote = ({
                       )
                     )}
                   </ul>
+                ) : (
+                  <p className="text-sm">
+                    No Questions. This is a quality note, go ahead and submit
+                    your session
+                  </p>
                 )}
               </div>
               {!note.error ? (
@@ -382,7 +393,7 @@ export const SessionNote = ({
           )}
         </div>
       )}
-      <div className="fixed bottom-0  laptop:left-8 tablet:left-8 phone:left-4 laptop:w-[76%] tablet:w-[60%] phone:w-[92%]">
+      <div className="fixed bottom-0  laptop:left-8 tablet:left-5 phone:left-2 laptop:w-[76%] tablet:w-[63%] phone:w-[95%]">
         <div className="flex items-center gap-3 justify-end mb-4">
           {isRecording && (
             <div className="flex items-center animate-pulse gap-1">
@@ -392,7 +403,7 @@ export const SessionNote = ({
           )}
           <button
             disabled={
-              !microphoneAccessState || !started || isSending || isLoading
+              !microphoneAccessState || !started || isSending || !isSupported
             }
             className={`${
               !isRecording ? "bg-primary-secondary" : "bg-[#FDEBEB]"
@@ -413,16 +424,15 @@ export const SessionNote = ({
         </div>
         <div className="py-4 bg-white">
           <div className="flex items-center gap-2 bg-neutral-quaternary p-4 border rounded-2xl border-neutral-quaternary">
-            <input
-              type="text"
-              disabled={!started || isSending || isLoading}
+            <textarea
+              disabled={!started || isSending}
               placeholder="Type your message..."
               onChange={(e) => setTranscript(e.target.value)}
               value={transcript}
               className="w-full bg-transparent resize-none outline-none text-sm text-[#58617B] placeholder:text-[#58617B] disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <button
-              disabled={!started || isSending || isLoading}
+              disabled={!started || isSending}
               onClick={() => handleSendMessage()}
               className="px-0 disabled:opacity-50 disabled:cursor-not-allowed"
             >

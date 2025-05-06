@@ -1,7 +1,7 @@
 import logo from "../../assets/images/stretchlab.png";
 import avatar from "../../assets/images/avatar.png";
 
-export const Header = () => {
+export const Header = ({ flexologist_name }: { flexologist_name: string }) => {
   return (
     <div className="flex laptop:flex-row tablet:flex-col phone:flex-col laptop:gap-[15%] tablet:gap-4 phone:gap-6 border-b border-neutral-tertiary py-4 laptop:items-center tablet:items-start">
       <div>
@@ -14,7 +14,8 @@ export const Header = () => {
       <div className="flex-1 flex w-full items-center ">
         <div>
           <h4 className="text-dark-1 font-semibold phone:text-xl text-2xl">
-            Welcome back! <span className="text-grey-2">James</span>
+            Welcome back!{" "}
+            <span className="text-grey-2">{flexologist_name}</span>
           </h4>
           <p className="text-grey-5 text-base">
             Ready to help your clients move better today?
@@ -25,7 +26,7 @@ export const Header = () => {
             <img src={avatar} alt="avatar" className="w-10 h-10" />
           </div>
           <div>
-            <p className="text-dark-1 font-medium">James</p>
+            <p className="text-dark-1 font-medium">{flexologist_name}</p>
             <p className="text-neutral-secondary text-sm">Flexologist</p>
           </div>
         </div>
