@@ -1,8 +1,12 @@
 export interface Booking {
   id: string;
-  startTime: string;
-  endTime: string;
-  title: string;
+  client_name: string;
+  phone: string;
+  event_date: string;
+  workout_type: string;
+  booking_id: string;
+  flexologist_name: string;
+  past: boolean;
 }
 
 export interface BookingListProps {

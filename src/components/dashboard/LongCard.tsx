@@ -1,7 +1,7 @@
+import { useNavigate } from "react-router";
 import client from "../../assets/images/client.png";
 import { Booking } from "../../types/dashboard";
 import { SvgIcon } from "../shared";
-
 export const LongCard = ({
   getBookingStyle,
   booking,
@@ -10,8 +10,11 @@ export const LongCard = ({
   booking: Booking;
 }) => {
   const isSmall = Number(getBookingStyle(booking).height.split("px")[0]) < 50;
+
+  const navigate = useNavigate();
   return (
     <div
+      onClick={() => navigate(`/session/${booking.booking_id}`)}
       className="absolute left-4 right-4 cursor-pointer bg-primary-base text-white rounded-lg px-2 flex flex-col justify-center shadow-md"
       style={getBookingStyle(booking)}
     >
@@ -26,7 +29,7 @@ export const LongCard = ({
                 isSmall ? "text-sm" : "text-lg"
               }`}
             >
-              Janica Micheal
+              {booking.client_name}
             </p>
           </div>
           <p
@@ -41,7 +44,7 @@ export const LongCard = ({
               fill="#fff"
               className="ml-1"
             />
-            <span className="ml-2">(234) 8123456789</span>
+            <span className="ml-2">{booking.phone}</span>
           </p>
         </div>
         <div>
@@ -51,7 +54,7 @@ export const LongCard = ({
                 isSmall ? "text-sm" : "text-lg"
               }`}
             >
-              07:00 AM - 09:30 AM
+              {booking.event_date}
             </p>
           </div>
           <p
@@ -60,7 +63,7 @@ export const LongCard = ({
             }`}
           >
             <span className="font-bold">Booking ID:</span>
-            <span className="ml-2">#865700</span>
+            <span className="ml-2">#{booking.booking_id}</span>
           </p>
         </div>
       </div>
