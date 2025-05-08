@@ -27,6 +27,7 @@ export const Session = () => {
   const [error, setError] = useState<boolean>(false);
   const [aiNotes, setAiNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<boolean>(false);
 
   const fetchNotes = async () => {
     setIsLoading(true);
@@ -110,8 +111,7 @@ export const Session = () => {
       .filter((note) => note.type === "user")
       .map((note) => note.note)
       .join("\n\n");
-    console.log(noteText, "noteText");
-    console.log(session?.event_date);
+
     try {
       setLoading(true);
       const response = await submitNotes({
@@ -119,7 +119,10 @@ export const Session = () => {
         period: session?.event_date as string,
       });
       if (response.status === 200) {
+        setIsModalOpen(false);
         setIsSuccessModalOpen(true);
+      } else {
+        setSubmitError(true);
       }
     } catch (error) {
       console.error(error);
@@ -211,13 +214,17 @@ export const Session = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirm}
+        error={submitError}
         loading={loading}
         title="Heads up!"
         message="You're about to submit this session note, this action can not be reversed."
       />
       <SuccessModal
         isOpen={isSuccessModalOpen}
-        onClose={() => setIsSuccessModalOpen(false)}
+        onClose={() => {
+          setIsSuccessModalOpen(false);
+          navigate("/dashboard");
+        }}
         title="Success!"
         message="Notes submitted successfully"
       />
