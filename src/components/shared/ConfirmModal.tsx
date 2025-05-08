@@ -8,6 +8,7 @@ export const ConfirmModal = ({
   title,
   message,
   loading,
+  error,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -15,6 +16,7 @@ export const ConfirmModal = ({
   title: string;
   message: string;
   loading: boolean;
+  error: boolean;
 }) => {
   if (!isOpen) return null;
 
@@ -32,6 +34,11 @@ export const ConfirmModal = ({
         </div>
         <h2 className="text-base text-center font-semibold mb-4">{title}</h2>
         <p className="mb-6 text-center text-grey-5 text-sm">{message}</p>
+        {error && (
+          <p className="my-4 text-center text-red-500 text-sm">
+            Error submitting notes. Try again
+          </p>
+        )}
         <div className="flex space-x-4">
           <button
             onClick={onClose}
