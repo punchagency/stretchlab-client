@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { Booking, BookingListProps } from "../../types/dashboard";
 import { LongCard } from "./LongCard";
 import { Card } from "./Card";
@@ -7,7 +7,8 @@ export const BookingList: FC<BookingListProps> = ({ bookings }) => {
   const hours = Array.from({ length: 13 }, (_, i) => 7 + i);
   const timeToMinutes = (time: string): number => {
     const [timePart, period] = time.trim().split(" ");
-    let [hours, minutes] = timePart.split(":").map(Number);
+    const [initialHours, minutes] = timePart.split(":").map(Number);
+    let hours = initialHours;
 
     if (period === "PM" && hours !== 12) {
       hours += 12;
