@@ -5,6 +5,7 @@ export const Home = () => {
   if (!token) {
     return <Navigate to="/login" />;
   }
+
   return (
     <div className="laptop:px-8 tablet:px-6 phone:px-4 py-4">
       <Outlet />
