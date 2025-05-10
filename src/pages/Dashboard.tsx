@@ -22,7 +22,6 @@ export const Dashboard = () => {
     try {
       setIsLoading(true);
       const response = await getBookings(getCookie as string, reset);
-      console.log(response);
       if (response.status === 200) {
         setBookings(response.data.bookings);
       } else {

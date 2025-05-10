@@ -83,7 +83,6 @@ export const Session = () => {
     try {
       setIsLoading(true);
       const response = await getBookings(getCookie as string);
-      console.log(response);
       if (response.status === 200) {
         const session = response.data.bookings.find(
           (booking: Booking) => booking.booking_id === id

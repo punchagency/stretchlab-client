@@ -79,7 +79,6 @@ export const SessionNote = ({
       let interimTranscript = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
-        console.log(result, "resulted stuff");
         if (result.isFinal) {
           finalTranscript += result[0].transcript;
         } else {
@@ -259,7 +258,6 @@ export const SessionNote = ({
     setIsAnalyzing(true);
     try {
       const response = await getQuestions(id as string);
-      console.log(response);
 
       if (response.status === 200) {
         setNotes((prevNotes) => [
