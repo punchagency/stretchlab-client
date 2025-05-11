@@ -4,7 +4,7 @@ export const SessionAi = ({ data }: { data: Note[] }) => {
   return (
     <div className="max-h-[70vh] overflow-y-auto relative border-l mt-3 border-[#EBF0F4]">
       <h3 className="text-base py-4 border-b  border-grey-1 font-medium text-[#2C2F3A]">
-        <span className="px-3">Stretch-Lab Ai Assistance</span>
+        <span className="px-3">Stretch-Lab AI Assistance</span>
       </h3>
       <div className="py-4 px-2">
         <div className="text-sm text-grey-5">
