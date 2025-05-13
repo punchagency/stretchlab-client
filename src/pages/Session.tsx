@@ -106,6 +106,7 @@ export const Session = () => {
   }, []);
 
   const handleConfirm = async () => {
+    setSubmitError(false);
     const noteText = notes
       .filter((note) => note.type === "user")
       .map((note) => note.note)
@@ -125,6 +126,7 @@ export const Session = () => {
       }
     } catch (error) {
       console.error(error);
+      setSubmitError(true);
     } finally {
       setLoading(false);
     }

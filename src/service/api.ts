@@ -1,7 +1,7 @@
 import axios from "axios";
 import { deleteUserCookie, getUserCookie } from "../utils/user";
 export const api = axios.create({
-  baseURL: "http://my-flask-alb-1879814720.eu-north-1.elb.amazonaws.com/api",
+  baseURL: "http://my-flask-alb-1260955850.eu-north-1.elb.amazonaws.com/api",
 });
 
 api.interceptors.request.use((config) => {

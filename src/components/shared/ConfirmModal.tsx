@@ -41,14 +41,16 @@ export const ConfirmModal = ({
         )}
         <div className="flex space-x-4">
           <button
+            disabled={loading}
             onClick={onClose}
-            className="px-4 py-2 w-full bg-white text-gray-800 rounded-md hover:bg-gray-100 drop-shadow-[0_0_8px_#1018280D]"
+            className="px-4 py-2 w-full bg-white text-gray-800 rounded-md hover:bg-gray-100 drop-shadow-[0_0_8px_#1018280D] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
+            disabled={loading}
             onClick={onConfirm}
-            className="px-4 py-2 w-full bg-primary-base text-white rounded-md hover:bg-opacity-80"
+            className="px-4 py-2 w-full bg-primary-base text-white rounded-md hover:bg-opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <div className="flex items-center gap-2">
