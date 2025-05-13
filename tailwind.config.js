@@ -16,8 +16,16 @@ export default {
           base: "#368591",
           secondary: "#E1EEF0",
           tertiary: "#79AACD",
+          light: "#F4FAFB",
+        },
+        neutral: {
+          base: "#F4F5F6",
+          secondary: "#B1B5C3",
+          tertiary: "#E6E8EC",
+          quaternary: "#F4F7F9",
         },
         grey: {
+          1: "#E4E7EC",
           2: "#98A2B3",
           3: "#D0D5DD",
           4: "#5B5772",
