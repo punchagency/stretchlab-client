@@ -76,7 +76,7 @@ export const Dashboard = () => {
   }
 
   return (
-    <div>
+    <div className="laptop:px-8 tablet:px-6 phone:px-4 py-4">
       <Header flexologist_name={bookings[0]?.flexologist_name || ""} />
 
       <div className="py-4">

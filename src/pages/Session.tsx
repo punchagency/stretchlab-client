@@ -163,7 +163,7 @@ export const Session = () => {
   }
 
   return (
-    <div>
+    <div className="laptop:px-8 tablet:px-6 phone:px-4 py-4">
       <div>
         <img
           src={logo}

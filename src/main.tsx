@@ -12,16 +12,15 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
-    children: [
-      {
-        path: "dashboard",
-        element: <Dashboard />,
-      },
-      {
-        path: "session/:id",
-        element: <Session />,
-      },
-    ],
+  },
+
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
+  },
+  {
+    path: "/session/:id",
+    element: <Session />,
   },
 ]);
 createRoot(document.getElementById("root")!).render(
