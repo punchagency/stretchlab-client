@@ -1,8 +1,7 @@
 import axios from "axios";
 import { deleteUserCookie, getUserCookie } from "../utils/user";
 export const api = axios.create({
-  baseURL: "https://my-flask-alb-1260955850.eu-north-1.elb.amazonaws.com/api",
-  // baseURL: "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL + "/api",
 });
 
 api.interceptors.request.use((config) => {
