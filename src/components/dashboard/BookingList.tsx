@@ -72,9 +72,13 @@ export const BookingList: FC<BookingListProps> = ({ bookings }) => {
         </div>
       </div>
       <div className="phone:flex laptop:hidden tablet:hidden flex-col gap-6">
-        {bookings.map((item, index) => (
-          <Card key={index} booking={item} />
-        ))}
+        {bookings.length > 0 &&
+          bookings.map((item, index) => <Card key={index} booking={item} />)}
+        {bookings.length == 0 && (
+          <div className="flex items-center justify-center h-[55vh]">
+            <p className="text-grey-2 text-sm">No bookings found!</p>
+          </div>
+        )}
       </div>
     </>
   );
