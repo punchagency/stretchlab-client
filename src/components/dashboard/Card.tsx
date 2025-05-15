@@ -1,7 +1,9 @@
 import client from "../../assets/images/client.png";
 import { Button, SvgIcon } from "../shared";
 import { Booking } from "../../types/dashboard";
+import { useNavigate } from "react-router";
 export const Card = ({ booking }: { booking: Booking }) => {
+  const navigate = useNavigate();
   return (
     <div className="border w-full  py-3 px-4 bg-primary-base rounded-lg">
       <p className="text-base border-b pb-2 text-white border-[#E4E7EC]">
@@ -24,7 +26,10 @@ export const Card = ({ booking }: { booking: Booking }) => {
         <span className="font-semibold">Booking ID:</span>
         <span> #{booking.booking_id}</span>
       </p>
-      <Button className="bg-primary-light w-full py-4 mt-3 text-sm font-normal rounded text-primary-base">
+      <Button
+        onClick={() => navigate(`/session/${booking.booking_id}`)}
+        className="bg-primary-light w-full py-4 mt-3 text-sm font-normal rounded text-primary-base"
+      >
         Start
       </Button>
     </div>

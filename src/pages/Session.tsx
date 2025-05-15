@@ -172,7 +172,13 @@ export const Session = () => {
         />
       </div>
       <Header
-        handleClick={!started ? startSession : () => setIsModalOpen(true)}
+        handleClick={
+          !started
+            ? startSession
+            : notes.length == 0
+            ? undefined
+            : () => setIsModalOpen(true)
+        }
         started={started}
         client_name={session?.client_name || ""}
       />
@@ -191,7 +197,13 @@ export const Session = () => {
       <div className="flex border justify-between items-center rounded-md px-4 py-3 laptop:mt-9 tablet:mt-9 phone:mt-4 border-[#F0F2F5]">
         <p className="font-medium text-grey-5">{session?.event_date}</p>
         <Button
-          onClick={!started ? startSession : () => setIsModalOpen(true)}
+          onClick={
+            !started
+              ? startSession
+              : notes.length == 0
+              ? undefined
+              : () => setIsModalOpen(true)
+          }
           className="bg-primary-base laptop:block tablet:block phone:hidden text-sm py-2 text-white"
         >
           {started ? "Submit Session" : "Start Session"}

@@ -89,7 +89,7 @@ export const Dashboard = () => {
           </div>
           <Button
             onClick={() => handleRefresh(true)}
-            className="bg-primary-base ml-auto py-1 text-white"
+            className="bg-primary-base ml-auto py-1 phone:mb-4 text-white"
           >
             Refresh
           </Button>

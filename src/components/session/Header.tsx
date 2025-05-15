@@ -8,7 +8,7 @@ export const Header = ({
 }: {
   started: boolean;
   client_name: string;
-  handleClick: () => void;
+  handleClick: (() => void) | undefined;
 }) => {
   const navigate = useNavigate();
   return (
@@ -37,7 +37,7 @@ export const Header = ({
         onClick={handleClick}
         className="bg-primary-base laptop:hidden tablet:hidden phone:block text-sm py-2 ml-auto text-white"
       >
-        Start Session
+        {started ? "Submit Session" : "Start Session"}
       </Button>
     </div>
   );
