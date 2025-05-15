@@ -35,10 +35,6 @@ export const SessionNote = ({
   edit: string;
   setNotes: (notes: Note[] | ((prevNotes: Note[]) => Note[])) => void;
 }) => {
-  // const socket = io("http://localhost:5000/transcribe", {
-  //   transports: ["websocket"],
-  // });
-
   const [transcript, setTranscript] = useState<string>("");
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [microphoneAccessState, setMicrophoneAccessState] =
@@ -114,6 +110,13 @@ export const SessionNote = ({
         notesContainerRef.current.scrollHeight;
     }
   }, [notes]);
+
+  useEffect(() => {
+    if (edit) {
+      setTranscript(edit);
+    }
+  }, [edit]);
+
   useEffect(() => {
     checkMicrophonePermission();
   }, []);
@@ -416,7 +419,7 @@ export const SessionNote = ({
               disabled={!started || isSending}
               placeholder="Click microphone or type your notes ..."
               onChange={(e) => setTranscript(e.target.value)}
-              value={edit ? edit : transcript}
+              value={transcript}
               className="w-full bg-transparent resize-none outline-none text-sm text-[#58617B] placeholder:text-[#58617B] disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <button
