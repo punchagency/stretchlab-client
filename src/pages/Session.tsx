@@ -29,6 +29,7 @@ export const Session = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<boolean>(false);
   const [edit, setEdit] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
 
   const fetchNotes = async () => {
     setIsLoading(true);
@@ -59,7 +60,7 @@ export const Session = () => {
         const lastAiNote = reversedNotes
           .filter((item: NoteResponse) => item.fields.type === "assistant")
           .pop();
-        if (lastAiNote) {
+        if (lastAiNote?.fields.formattedNotes) {
           setAiNotes(
             JSON.parse(lastAiNote?.fields.formattedNotes) as formattedNote
           );
@@ -125,6 +126,7 @@ export const Session = () => {
       });
       if (response.status === 200) {
         setIsModalOpen(false);
+        setMessage(response.data.message);
         setIsSuccessModalOpen(true);
       } else {
         setSubmitError(true);
@@ -244,7 +246,7 @@ export const Session = () => {
           navigate("/dashboard");
         }}
         title="Success!"
-        message="Notes submitted successfully"
+        message={message}
       />
     </div>
   );
