@@ -7,6 +7,19 @@ export interface Note {
   type: string;
 }
 
+export interface formattedNote {
+  notes: Array<{
+    "Current phase": string;
+    Focus: string;
+    MAPS: string;
+    "Next session": string;
+    Homework: string;
+    Considerations: string;
+    "Missing Information": string;
+    "Suggested Improvement": string;
+  }>;
+}
+
 export interface NoteResponse {
   createdTime: Date;
   fields: {

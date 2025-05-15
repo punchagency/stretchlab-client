@@ -10,6 +10,7 @@ import {
   SpeechRecognition,
   SpeechRecognitionErrorEvent,
   SpeechRecognitionEvent,
+  formattedNote,
 } from "../../types";
 
 declare global {
@@ -21,15 +22,17 @@ declare global {
 
 export const SessionNote = ({
   setAiNotes,
+  edit,
   id,
   started,
   notes,
   setNotes,
 }: {
-  setAiNotes: (notes: Note[] | ((prevNotes: Note[]) => Note[])) => void;
+  setAiNotes: (notes: formattedNote) => void;
   id: string;
   started: boolean;
   notes: Note[];
+  edit: string;
   setNotes: (notes: Note[] | ((prevNotes: Note[]) => Note[])) => void;
 }) => {
   // const socket = io("http://localhost:5000/transcribe", {
@@ -274,20 +277,7 @@ export const SessionNote = ({
             error: false,
           },
         ]);
-        setAiNotes((prevNotes) => [
-          ...prevNotes,
-          {
-            id: uuidv4(),
-            note: response.data.questions.questions,
-            time: new Date().toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
-            type: "assistant",
-            voice: false,
-            error: false,
-          },
-        ]);
+        setAiNotes(response.data.formatted_notes);
       }
     } catch (err) {
       console.error("Error analyzing notes:", err);
@@ -424,9 +414,9 @@ export const SessionNote = ({
           <div className="flex items-center gap-2 bg-neutral-quaternary p-4 border rounded-2xl border-neutral-quaternary">
             <textarea
               disabled={!started || isSending}
-              placeholder="Type your message..."
+              placeholder="Click microphone or type your notes ..."
               onChange={(e) => setTranscript(e.target.value)}
-              value={transcript}
+              value={edit ? edit : transcript}
               className="w-full bg-transparent resize-none outline-none text-sm text-[#58617B] placeholder:text-[#58617B] disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <button

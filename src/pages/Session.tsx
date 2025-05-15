@@ -9,7 +9,7 @@ import {
 import logo from "../assets/images/stretchlab.png";
 import { useEffect, useState } from "react";
 import { getNotes, submitNotes } from "../service/session";
-import { ApiError, Note, Booking, NoteResponse } from "../types";
+import { ApiError, Note, Booking, NoteResponse, formattedNote } from "../types";
 import { getBookings } from "../service/dashboard";
 import { getUserCookie } from "../utils/user";
 export const Session = () => {
@@ -25,9 +25,10 @@ export const Session = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [session, setSession] = useState<Booking | null>(null);
   const [error, setError] = useState<boolean>(false);
-  const [aiNotes, setAiNotes] = useState<Note[]>([]);
+  const [aiNotes, setAiNotes] = useState<formattedNote | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<boolean>(false);
+  const [edit, setEdit] = useState<string>("");
 
   const fetchNotes = async () => {
     setIsLoading(true);
@@ -55,21 +56,14 @@ export const Session = () => {
             error: false,
           }))
         );
-        setAiNotes(
-          reversedNotes
-            .filter(
-              (note: { fields: { type: string } }) =>
-                note.fields.type === "assistant"
-            )
-            .map((note: NoteResponse) => ({
-              id: note.id,
-              note: JSON.parse(note.fields.Note),
-              time: note.createdTime,
-              voice: note.fields.Voice === "False" ? false : true,
-              type: note.fields.type,
-              error: false,
-            }))
-        );
+        const lastAiNote = reversedNotes
+          .filter((item: NoteResponse) => item.fields.type === "assistant")
+          .pop();
+        if (lastAiNote) {
+          setAiNotes(
+            JSON.parse(lastAiNote?.fields.formattedNotes) as formattedNote
+          );
+        }
       }
     } catch (err) {
       console.error("Error fetching notes:", err);
@@ -107,10 +101,21 @@ export const Session = () => {
 
   const handleConfirm = async () => {
     setSubmitError(false);
-    const noteText = notes
-      .filter((note) => note.type === "user")
-      .map((note) => note.note)
-      .join("\n\n");
+    let noteText = "";
+    if (aiNotes) {
+      noteText = aiNotes?.notes
+        .map((note) =>
+          Object.entries(note)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join("\n")
+        )
+        .join("\n\n");
+    } else {
+      noteText = notes
+        .filter((note) => note.type === "user")
+        .map((note) => note.note)
+        .join("\n\n");
+    }
 
     try {
       setLoading(true);
@@ -213,6 +218,7 @@ export const Session = () => {
         <div className="laptop:col-span-4 tablet:col-span-2 phone:col-span-1">
           <SessionNote
             setAiNotes={setAiNotes}
+            edit={edit}
             notes={notes}
             setNotes={setNotes}
             id={id as string}
@@ -220,7 +226,7 @@ export const Session = () => {
           />
         </div>
         <div className="laptop:col-span-1 tablet:col-span-1 laptop:block tablet:block phone:hidden">
-          <SessionAi data={aiNotes} />
+          <SessionAi data={aiNotes} started={started} setEdit={setEdit} />
         </div>
       </div>
       <ConfirmModal
