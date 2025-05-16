@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router";
+import { Navigate, useNavigate, useParams } from "react-router";
 import { Header, SessionAi, SessionNote } from "../components/session";
 import {
   Button,
@@ -15,6 +15,7 @@ import { getUserCookie } from "../utils/user";
 export const Session = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const token = getUserCookie();
   if (!id) {
     navigate("/dashboard");
   }
@@ -99,6 +100,9 @@ export const Session = () => {
   useEffect(() => {
     initializeSession();
   }, []);
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
 
   const handleConfirm = async () => {
     setSubmitError(false);
