@@ -112,14 +112,14 @@ export const Session = () => {
         .map((note) =>
           Object.entries(note)
             .map(([key, value]) => `${key}: ${value}`)
-            .join("\n")
+            .join("  |  ")
         )
-        .join("\n\n");
+        .join("\n");
     } else {
       noteText = notes
         .filter((note) => note.type === "user")
         .map((note) => note.note)
-        .join("\n\n");
+        .join("  |  ");
     }
 
     try {
